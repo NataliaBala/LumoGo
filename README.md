@@ -12,8 +12,10 @@ Backend aplikacji mobilnej LumoGo dla biegaczy i osób aktywnych.
 - H2 Database (runtime)
 
 ## Uruchomienie
-1. `mvn spring-boot:run`
+1. `./mvnw spring-boot:run` (Linux/macOS) lub `mvnw.cmd spring-boot:run` (Windows)
 2. Aplikacja dostępna pod `http://localhost:8080`
+
+> Wymagany jest Java JDK, nie tylko JRE.
 
 ## Endpoints
 - `GET /api/health` - health check
