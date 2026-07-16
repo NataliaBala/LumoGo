@@ -11,15 +11,17 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@Tag(name = "Health", description = "Endpoint sprawdzenia stanu aplikacji")
-public class HealthController {
+@Tag(name = "Test", description = "Endpoint testowy")
+public class TestController {
 
-    @GetMapping("/health")
-    @Operation(summary = "Sprawdzenie stanu aplikacji", description = "Zwraca status dostępności serwera")
-    public ResponseEntity<Map<String, String>> health() {
+    @GetMapping("/test")
+    @Operation(summary = "Test połączenia", description = "Sprawdza czy backend jest dostępny")
+    public ResponseEntity<Map<String, String>> test() {
         return ResponseEntity.ok(Map.of(
-            "status", "UP",
-            "service", "LumoGo Backend"
+            "status", "OK",
+            "message", "LumoGo backend is reachable",
+            "timestamp", String.valueOf(System.currentTimeMillis())
         ));
     }
 }
+
