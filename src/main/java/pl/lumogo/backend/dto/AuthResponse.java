@@ -14,6 +14,8 @@ public class AuthResponse {
     private String firstName;
     @Schema(description = "Nazwisko użytkownika", example = "Kowalska")
     private String lastName;
+    @Schema(description = "Zainteresowania użytkownika jako tekst", example = "Sport, Muzyka, Podróże")
+    private String interests;
 
     public AuthResponse() {
     }
@@ -29,6 +31,15 @@ public class AuthResponse {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public AuthResponse(String status, String message, String email, String firstName, String lastName, String interests) {
+        this.status = status;
+        this.message = message;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.interests = interests;
     }
 
     public String getStatus() {
@@ -69,5 +80,13 @@ public class AuthResponse {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getInterests() {
+        return interests;
+    }
+
+    public void setInterests(String interests) {
+        this.interests = interests;
     }
 }

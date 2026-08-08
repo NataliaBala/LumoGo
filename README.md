@@ -26,7 +26,7 @@ Aplikacja będzie dostępna pod `http://localhost:8080` (oraz na adresie IP serw
 
 Jeśli chcesz, aby backend był dostępny z zewnątrz, upewnij się, że port 8080 jest otwarty w firewallu i serwer nasłuchuje na `0.0.0.0`.
 
-> Wymagany jest Java JDK, nie tylko JRE.
+> Backend jest skonfigurowany do nasłuchiwania na `0.0.0.0`, więc frontend na innym urządzeniu może korzystać z `http://<IP_SERWERA>:8080`.
 
 ## Docker i PostgreSQL
 1. `docker compose up --build`
@@ -35,14 +35,14 @@ Jeśli chcesz, aby backend był dostępny z zewnątrz, upewnij się, że port 80
 4. Baza PostgreSQL dostępna pod `postgresql://postgres:postgres@localhost:5432/lumogo`
 
 ## Ngrok
-1. Uruchom backend lokalnie (port 8081) lub w Dockerze (port 8080)
-2. Otwórz terminal i wpisz: `ngrok http 8081` (dla development) lub `ngrok http 8080` (dla Docker)
+1. Uruchom backend lokalnie (port 8080) lub w Dockerze (port 8080)
+2. Otwórz terminal i wpisz: `ngrok http 8080`
 3. Skopiuj wygenerowany adres publiczny, np. `https://xxxxxx.ngrok.io`
 4. Frontend może korzystać z tego adresu dla połączeń do API
 
 ## Swagger
-- UI Swagger: `http://localhost:8081/swagger-ui/index.html`
-- API docs: `http://localhost:8081/v3/api-docs`
+- UI Swagger: `http://localhost:8080/swagger-ui/index.html`
+- API docs: `http://localhost:8080/v3/api-docs`
 
 ## Endpoints
 - `GET /api/health` - health check
