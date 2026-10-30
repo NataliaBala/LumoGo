@@ -29,7 +29,6 @@ public class SecurityConfig {
                     "/api/auth/**",
                     "/api/interests/**",
                     "/api/conditions/**",
-                    "/h2-console/**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html"
@@ -37,8 +36,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .httpBasic(httpBasic -> httpBasic.disable())
-            .formLogin(form -> form.disable())
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+            .formLogin(form -> form.disable());
 
         return http.build();
     }
