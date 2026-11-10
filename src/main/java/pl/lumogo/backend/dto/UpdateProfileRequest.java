@@ -4,25 +4,26 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "UpdateProfileRequest", description = "Żądanie aktualizacji profilu użytkownika")
 public class UpdateProfileRequest {
-    @Schema(description = "E-mail użytkownika", example = "anna@example.com")
-    private String email;
     @Schema(description = "Imię użytkownika", example = "Anna")
     private String firstName;
     @Schema(description = "Nazwisko użytkownika", example = "Kowalska")
     private String lastName;
-    @Schema(description = "Nowe hasło użytkownika", example = "Abc123")
+    @Schema(description = "Nowe hasło użytkownika", example = "Haslo!23")
     private String password;
-    @Schema(description = "Potwierdzenie nowego hasła", example = "Abc123")
+    @Schema(description = "Potwierdzenie nowego hasła", example = "Haslo!23")
     private String passwordConfirm;
-    @Schema(description = "Aktualne hasło użytkownika", example = "Abc123")
+    @Schema(description = "Aktualne hasło użytkownika", example = "Haslo!23")
     private String currentPassword;
 
-    public String getEmail() {
-        return email;
+    @Schema(description = "Płeć (pusty tekst lub \"-\" usuwa wartość)", example = "Woman")
+    private String gender;
+
+    public String getGender() {
+        return gender;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getFirstName() {

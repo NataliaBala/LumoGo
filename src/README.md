@@ -1,63 +1,82 @@
 # LumoGo Backend
 
-Backend aplikacji LumoGo oparty na Spring Boot. Udostępnia REST API do rejestracji i logowania, profilu użytkownika, zainteresowań, warunków pogodowych oraz stanu widgetu.
+Backend aplikacji mobilnej LumoGo dla biegaczy i osób aktywnych.
 
-## Wymagania
+## Stack
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- Spring Security
+- Spring Validation
+- H2 Database (runtime)
 
-- Java zgodna z wersją skonfigurowaną w projekcie
-- PostgreSQL
-- Konfiguracja połączenia z bazą przez zmienne środowiskowe
+## Uruchomienie
+### Windows
+1. Otwórz terminal w katalogu projektu
+2. Uruchom: `run.bat`
 
-> W aktualnym katalogu projektu nie ma pliku `pom.xml`, `build.gradle` ani `build.gradle.kts`. Przed uruchomieniem lokalnym lub skonfigurowaniem nowego buildu trzeba dodać/odzyskać plik budowania projektu. Render może korzystać z konfiguracji Docker zapisanej poza tym katalogiem/repozytorium.
+### PowerShell
+1. Otwórz terminal w katalogu projektu
+2. Uruchom: `powershell -ExecutionPolicy Bypass -File .\run.ps1`
 
-## Konfiguracja
+Jeśli `mvnw.cmd` w PowerShell nie działa, użyj `run.bat`.
 
-Aplikacja czyta ustawienia z pliku `main/resources/application.yml`. Ustaw poniższe zmienne w środowisku uruchomieniowym, np. w Render w ustawieniach Web Service → Environment:
+Aplikacja będzie dostępna pod `http://localhost:8080` (oraz na adresie IP serwera, jeśli jest wystawiona z zewnątrz)
 
-| Zmienna | Wymagana | Opis |
-| --- | --- | --- |
-| `SERVER_PORT` | Nie | Port serwera; domyślnie `8080`. |
-| `SERVER_ADDRESS` | Nie | Adres nasłuchiwania; domyślnie `0.0.0.0`. |
-| `SPRING_DATASOURCE_URL` | Tak | JDBC URL PostgreSQL, np. `jdbc:postgresql://HOST:5432/NAZWA_BAZY?sslmode=require`. |
-| `SPRING_DATASOURCE_DRIVER` | Tak | `org.postgresql.Driver`. |
-| `SPRING_DATASOURCE_USERNAME` | Tak | Użytkownik bazy PostgreSQL. |
-| `SPRING_DATASOURCE_PASSWORD` | Tak | Hasło bazy PostgreSQL. Trzymaj je wyłącznie w ustawieniach środowiska. |
-| `SPRING_JPA_HIBERNATE_DDL_AUTO` | Nie | Tryb zarządzania schematem; domyślnie `update`. |
+Jeśli chcesz, aby backend był dostępny z zewnątrz, upewnij się, że port 8080 jest otwarty w firewallu i serwer nasłuchuje na `0.0.0.0`.
 
-Nie zapisuj haseł ani pełnych connection stringów zawierających hasło w repozytorium, README, aplikacji mobilnej ani publicznych logach. Jeśli dane dostępowe zostały ujawnione, zmień hasło w panelu bazy i zaktualizuj zmienną środowiskową.
+> Backend jest skonfigurowany do nasłuchiwania na `0.0.0.0`, więc frontend na innym urządzeniu może korzystać z `http://<IP_SERWERA>:8080`.
 
-## Deploy na Render
+## Docker i PostgreSQL
+1. `docker compose up --build`
+2. Backend dostępny pod `http://localhost:8080` (lub inny port jeśli zmienisz zmienną `SERVER_PORT`)
+3. Dla dostępu z zewnątrz użyj adresu serwera: `http://<IP_SERWERA>:8080/api/health`
+4. Baza PostgreSQL dostępna pod `postgresql://postgres:postgres@localhost:5432/lumogo`
 
-1. Utwórz bazę PostgreSQL w Render.
-2. Utwórz Web Service dla backendu i połącz go z repozytorium zawierającym kompletny projekt oraz konfigurację buildu.
-3. W Web Service ustaw zmienne `SPRING_DATASOURCE_*` zgodnie z danymi bazy. Użyj adresu bazy dostępnego z Web Service; dla usług w Render preferuj wewnętrzny adres bazy, jeśli oba serwisy są w tym samym regionie.
-4. Nie ustawiaj portu na stałe, jeśli konfiguracja usługi wymaga portu dostarczanego przez platformę. Aplikacja używa `SERVER_PORT`, domyślnie `8080`.
-5. Po deployu sprawdź logi oraz endpoint `https://<adres-uslugi>/api/health`.
+## Ngrok
+1. Uruchom backend lokalnie (port 8080) lub w Dockerze (port 8080)
+2. Otwórz terminal i wpisz: `ngrok http 8080`
+3. Skopiuj wygenerowany adres publiczny, np. `https://xxxxxx.ngrok.io`
+4. Frontend może korzystać z tego adresu dla połączeń do API
 
-## Endpointy API
+## Swagger
+- UI Swagger: `http://localhost:8080/swagger-ui/index.html`
+- API docs: `http://localhost:8080/v3/api-docs`
 
-| Metoda | Ścieżka | Opis |
-| --- | --- | --- |
-| `GET` | `/api/health` | Status aplikacji. |
-| `GET` | `/api/test` | Test dostępności backendu. |
-| `POST` | `/api/auth/register` | Rejestracja użytkownika. |
-| `POST` | `/api/auth/login` | Logowanie użytkownika. |
-| `GET` | `/api/auth/profile?email=...` | Pobranie profilu użytkownika. |
-| `PUT` | `/api/auth/profile` | Aktualizacja profilu użytkownika. |
-| `GET` | `/api/interests/options` | Lista dostępnych zainteresowań. |
-| `GET` | `/api/interests/user?email=...` | Zainteresowania użytkownika. |
-| `POST` | `/api/interests` | Zapis zainteresowań użytkownika. |
-| `GET` | `/api/conditions/today?lat=...&lon=...` | Dzisiejsze warunki pogodowe; domyślnie Warszawa. |
-| `GET` | `/api/widget/status?email=...` | Stan widgetu; parametr `email` jest opcjonalny. |
+## Endpoints
 
-Dokumentacja OpenAPI/Swagger jest udostępniana pod `/v3/api-docs` i `/swagger-ui.html`.
+Endpointy oznaczone 🔒 wymagają nagłówka `Authorization: Bearer <token>`.
+Token zwracają `register` i `login` (ważny 30 dni, `JWT_TTL_DAYS`). Użytkownik jest brany z tokena,
+nie z parametru `email`.
 
-## Test dostępności
+- `GET /api/health` – health check
+- `GET /api/conditions/today?lat={lat}&lon={lon}` – bieżąca pogoda, AQI i ocena 0–100
+- `GET /api/conditions/best-window?lat={lat}&lon={lon}&date=2026-11-10&durationMinutes=30` – najlepsze okno
+  na aktywność w danym dniu (od dziś do 4 dni naprzód, start o pełnej godzinie 6:00–22:00, uwzględnia szansę opadów)
+- `POST /api/auth/register` – rejestracja, zwraca token oraz `id` i `gender`
+  - `{ "email": "anna@example.com", "firstName": "Anna", "gender": "Woman", "password": "Haslo!23" }`
+  - `lastName`, `gender` i `passwordConfirm` opcjonalne (`gender: "-"` = nie podano);
+    hasło: min. 8 znaków, wielka litera, znak specjalny
+- `POST /api/auth/login` – `{ "email": "anna@example.com", "password": "Haslo!23" }`, zwraca token
+- 🔒 `GET /api/auth/profile`, 🔒 `PUT /api/auth/profile` (`firstName`, `lastName`, `gender`) – profil
+- 🔒 `POST /api/auth/change-password` – `{ "currentPassword": "...", "newPassword": "..." }`, 204
+- 🔒 `DELETE /api/auth/account` – usuwa konto, plany i preferencje (wymóg Google Play), 204
+- 🔒 `GET /api/plans`, 🔒 `POST /api/plans`, 🔒 `DELETE /api/plans/{id}` – zapisane plany (tylko własne)
+- 🔒 `GET /api/preferences`, 🔒 `PUT /api/preferences` – `{ "defaultDuration": 30, "favoriteActivities": "walking,running" }`
+- `GET /api/content/faq`, `GET /api/content/privacy` – treści z `src/main/resources/content/*.json`
+  (polityka prywatności to **szkic do weryfikacji**: uzupełnij administratora danych)
+- `GET /api/interests/options` – lista zainteresowań
+- 🔒 `GET /api/interests/user`, 🔒 `POST /api/interests` (`{ "interests": ["Bieganie", "Spacer"] }`)
+- 🔒 `GET /api/widget/status`
 
-Po uruchomieniu backendu lub deployu:
+Błędy mają pole `code` do tłumaczenia w aplikacji: `EMAIL_TAKEN` (409), `INVALID_CREDENTIALS` (401),
+`VALIDATION_ERROR` (400), `USER_NOT_FOUND` (404), `NO_CHANGES` (400). Pole `message` jest po polsku.
 
-```text
-GET https://<adres-uslugi>/api/health
-```
+## Zmienne środowiskowe
 
-Oczekiwana odpowiedź zawiera status `UP` i nazwę usługi `LumoGo Backend`.
+| Zmienna | Domyślnie | Uwagi |
+|---|---|---|
+| `JWT_SECRET` | sekret deweloperski | **na serwerze obowiązkowo własny**, min. 32 znaki (`openssl rand -base64 48`) |
+| `JWT_TTL_DAYS` | 30 | ważność tokena |
+| `SPRING_DATASOURCE_*` | H2 w pamięci | Postgres: patrz docker-compose |
+| `H2_CONSOLE_ENABLED` | false | tylko lokalnie |

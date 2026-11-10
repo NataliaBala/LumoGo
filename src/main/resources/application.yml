@@ -9,19 +9,17 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:}
   jpa:
-    database-platform: ${SPRING_JPA_DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-    show-sql: true
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
   h2:
     console:
-      enabled: true
+      # Tylko do lokalnego debugowania na H2: H2_CONSOLE_ENABLED=true
+      enabled: ${H2_CONSOLE_ENABLED:false}
       path: /h2-console
-  webflux:
-    static-path-pattern: /static/**
 
 springdoc:
   api-docs:
@@ -36,3 +34,9 @@ logging:
   level:
     root: INFO
     org.springframework: INFO
+
+app:
+  jwt:
+    # Na serwerze ustaw JWT_SECRET (min. 32 znaki), np. wynik: openssl rand -base64 48
+    secret: ${JWT_SECRET:lumogo-dev-secret-change-me-before-deploy-0123456789}
+    ttl-days: ${JWT_TTL_DAYS:30}

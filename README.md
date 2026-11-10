@@ -2,6 +2,17 @@
 
 Backend aplikacji mobilnej LumoGo dla biegaczy i osób aktywnych.
 
+## Wdrożenie na Render
+
+1. Utwórz bazę PostgreSQL w Render. Skopiuj jej wewnętrzne parametry połączenia. Nie używaj darmowej bazy do danych produkcyjnych: ma ograniczenia i może wygasnąć.
+2. W Render wybierz **New → Blueprint**, połącz repozytorium `NataliaBala/LumoGo` i wskaż ten plik `render.yaml`.
+3. Uzupełnij wymagane wartości `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` i `DB_PASSWORD` danymi z bazy PostgreSQL. Render wygeneruje `JWT_SECRET`.
+4. Zatwierdź Blueprint i poczekaj, aż wdrożenie przejdzie kontrolę zdrowia `/api/health`.
+5. Skopiuj publiczny adres usługi HTTPS. Dokumentacja API będzie pod `/v3/api-docs`, a Swagger UI pod `/swagger-ui.html`.
+6. Gdy frontend będzie miał docelową domenę, zmień `CORS_ALLOWED_ORIGINS` w ustawieniach usługi na tę domenę (np. `https://app.example.com`) i wykonaj redeploy.
+
+Frontend używa publicznego adresu usługi jako bazowego URL API. Chronione żądania wysyłają `Authorization: Bearer <accessToken>`. Plan usługi `free` może usypiać backend po okresie bezczynności. Baza PostgreSQL jest osobnym zasobem Render i jej plan może wiązać się z opłatą; sprawdź koszt i trwałość planu przed utworzeniem bazy.
+
 ## Stack
 - Spring Boot
 - Spring Web
